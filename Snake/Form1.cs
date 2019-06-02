@@ -13,10 +13,12 @@ namespace Snake
     public partial class Form1 : Form
     {
         PlayZone map = new PlayZone();
-        Snake snake;
+        Snake snake1;
+        Snake snake2;
         bool started = false;
         Random rnd1 = new Random();
-        Dictionary<Keys, Vector> keyboardMapping = new Dictionary<Keys, Vector>();
+        Dictionary<Keys, Vector> keyboardMapping1 = new Dictionary<Keys, Vector>();
+        Dictionary<Keys, Vector> keyboardMapping2 = new Dictionary<Keys, Vector>();
         Vector alma;
 
         public Form1()
@@ -24,10 +26,16 @@ namespace Snake
             InitializeComponent();
             map.mapSize = Convert.ToInt32(textBox2.Text);
             map.mapUnit = 500 / map.mapSize;
-            keyboardMapping.Add(Keys.Up, new Vector("up"));
-            keyboardMapping.Add(Keys.Down, new Vector("down"));
-            keyboardMapping.Add(Keys.Left, new Vector("left"));
-            keyboardMapping.Add(Keys.Right, new Vector("right"));
+            //Player1
+            keyboardMapping1.Add(Keys.W, new Vector("up"));
+            keyboardMapping1.Add(Keys.S, new Vector("down"));
+            keyboardMapping1.Add(Keys.A, new Vector("left"));
+            keyboardMapping1.Add(Keys.D, new Vector("right"));
+            //Player2
+            keyboardMapping2.Add(Keys.Up, new Vector("up"));
+            keyboardMapping2.Add(Keys.Down, new Vector("down"));
+            keyboardMapping2.Add(Keys.Left, new Vector("left"));
+            keyboardMapping2.Add(Keys.Right, new Vector("right"));
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -49,8 +57,11 @@ namespace Snake
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData) //Irányítás
         {
-            if (keyboardMapping.ContainsKey(keyData))
-                snake.changeDirection(keyboardMapping[keyData]);
+            if (keyboardMapping1.ContainsKey(keyData))
+                snake1.changeDirection(keyboardMapping1[keyData]);
+
+            if (keyboardMapping2.ContainsKey(keyData))
+                snake2.changeDirection(keyboardMapping2[keyData]);
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
@@ -65,34 +76,59 @@ namespace Snake
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (snake.isDead)
+            //Player1
+            if (snake1.isDead)
             {
                 stop();
-                MessageBox.Show("Vesztettel");
+                MessageBox.Show("Player1 vesztett");
                 return;
             }
-            snake.moveParts(map, ref alma);
-            if (snake.direction.X != 0 || snake.direction.Y != 0)
+            snake1.moveParts(map, ref alma);
+            if (snake1.direction.X != 0 || snake1.direction.Y != 0)
             {
-                if (snake.bodyCollide(snake.bodyparts[0]) || snake.bodyparts[0].X < 0 || snake.bodyparts[0].Y < 0 || snake.bodyparts[0].X > map.mapSize - 1 || snake.bodyparts[0].Y > map.mapSize - 1)
+                if (snake1.bodyCollide(snake1.bodyparts[0]) || snake1.bodyparts[0].X < 0 || snake1.bodyparts[0].Y < 0 || snake1.bodyparts[0].X > map.mapSize - 1 || snake1.bodyparts[0].Y > map.mapSize - 1)
                 {
-                    snake.isDead = true;
+                    snake1.isDead = true;
                 }
             }
 
-            if (!snake.isDead)
-            {
-                snake.snakeRefresh(map);
-            }
+            if (!snake1.isDead)
+                snake1.snakeRefresh(map);
 
-            label3.Text = "Score: " + Convert.ToInt32(snake.score);
-
-            if (snake.headCollide(alma))
+            label3.Text = "Score: " + Convert.ToInt32(snake1.score);
+            if (snake1.headCollide(alma))
             {
-                snake.grow();
+                snake1.grow();
                 alma.X = rnd1.Next(map.mapSize);
                 alma.Y = rnd1.Next(map.mapSize);
-                snake.score++;
+                snake1.score++;
+            }
+            //Player2
+            if (snake2.isDead)
+            {
+                stop();
+                MessageBox.Show("Player1 vesztett");
+                return;
+            }
+            snake2.moveParts(map, ref alma);
+            if (snake2.direction.X != 0 || snake2.direction.Y != 0)
+            {
+                if (snake2.bodyCollide(snake2.bodyparts[0]) || snake2.bodyparts[0].X < 0 || snake2.bodyparts[0].Y < 0 || snake2.bodyparts[0].X > map.mapSize - 1 || snake2.bodyparts[0].Y > map.mapSize - 1)
+                {
+                    snake2.isDead = true;
+                }
+            }
+
+            if (!snake2.isDead)
+                snake2.snakeRefresh(map);
+
+            label3.Text = "Score: " + Convert.ToInt32(snake2.score);
+            if (snake2.headCollide(alma))
+            {
+                snake2.grow();
+                alma.X = rnd1.Next(map.mapSize);
+                alma.Y = rnd1.Next(map.mapSize);
+                snake2.score++;
             }
 
             map.teliNegyzet(alma.X, alma.Y, Color.Red);
@@ -105,19 +141,18 @@ namespace Snake
             map.clearBoard();
             label3.Text = "Score: 0";
             pictureBox1.Image = map.kép;
-            snake = new Snake(map, new Vector(5, 5), new Vector(0, 0));
-            snake.score = 0;
+
+            snake1 = new Snake(map, new Vector(5, 5), new Vector(0, 0));
+            snake1.score = 0;
+
+            snake2 = new Snake(map, new Vector(5, 5), new Vector(0, 0));
+            snake2.score = 0;
+
             alma = new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize));
-            for (int i = 0; i < snake.bodyparts.Count; i++)
-            {
-                if (alma.X == snake.bodyparts[i].X && alma.Y == snake.bodyparts[i].Y)
-                {
-                    alma = new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize));
-                    i = 0;
-                }
-            }
+
             timer1.Start();
             started = !started;
+            textBox1.Enabled = false;
             textBox2.Enabled = false;
             map.teliNegyzet(alma.X, alma.Y, Color.Red);
             button1.Text = "Stop";
