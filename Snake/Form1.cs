@@ -7,31 +7,35 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Media;
 
 namespace Snake
 {
     public partial class Form1 : Form
     {
         PlayZone map = new PlayZone();
-        Snake snake1;
-        Snake snake2;
+        List<Snake> snake = new List<Snake>();
         bool started = false;
         Random rnd1 = new Random();
         Dictionary<Keys, Vector> keyboardMapping1 = new Dictionary<Keys, Vector>();
         Dictionary<Keys, Vector> keyboardMapping2 = new Dictionary<Keys, Vector>();
-        Vector alma;
+        List<Alma> almalist = new List<Alma>();
+        SoundPlayer endSound = new SoundPlayer("Mario Dying Sound.wav");
+        public Color player1 = Color.Blue;
+        public Color player2 = Color.Green;
 
         public Form1()
         {
             InitializeComponent();
             map.mapSize = Convert.ToInt32(textBox2.Text);
             map.mapUnit = 500 / map.mapSize;
-            //Player1
+            timer1.Interval = Convert.ToInt32(textBox1.Text);
+            //Player 1
             keyboardMapping1.Add(Keys.W, new Vector("up"));
             keyboardMapping1.Add(Keys.S, new Vector("down"));
             keyboardMapping1.Add(Keys.A, new Vector("left"));
             keyboardMapping1.Add(Keys.D, new Vector("right"));
-            //Player2
+            //Player 2
             keyboardMapping2.Add(Keys.Up, new Vector("up"));
             keyboardMapping2.Add(Keys.Down, new Vector("down"));
             keyboardMapping2.Add(Keys.Left, new Vector("left"));
@@ -40,31 +44,38 @@ namespace Snake
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            if (textBox1.Text != "" && Convert.ToInt32(textBox1.Text) != 0)
+            int interval;
+            bool result = Int32.TryParse(textBox1.Text, out interval);
+            if (result)
             {
-                timer1.Interval = Convert.ToInt32(textBox1.Text);
+                timer1.Interval = Convert.ToInt32(interval);
             }
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            if (textBox2.Text != "" && Convert.ToInt32(textBox2.Text) != 0)
+            int mapSize;
+            bool result = Int32.TryParse(textBox2.Text, out mapSize);
+            if (result)
             {
-                map.mapSize = Convert.ToInt32(textBox2.Text);
-                map.mapUnit = 500 / map.mapSize;
+                map.mapSize = mapSize;
+                map.mapUnit = 500 / mapSize;
             }
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData) //Irányítás
         {
-            if (keyboardMapping1.ContainsKey(keyData))
-                snake1.changeDirection(keyboardMapping1[keyData]);
+            if (started)
+            {
+                if (keyboardMapping1.ContainsKey(keyData))
+                    snake[0].directionBuffer = keyboardMapping1[keyData];
 
-            if (keyboardMapping2.ContainsKey(keyData))
-                snake2.changeDirection(keyboardMapping2[keyData]);
+                if (keyboardMapping2.ContainsKey(keyData))
+                    snake[1].directionBuffer = keyboardMapping2[keyData];
+            }
             return base.ProcessCmdKey(ref msg, keyData);
         }
-
+        
         private void button1_Click(object sender, EventArgs e)
         {
             if (!started)
@@ -76,62 +87,57 @@ namespace Snake
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            //Player1
-            if (snake1.isDead)
+            for (int i = 0; i < snake.Count; i++)
             {
-                stop();
-                MessageBox.Show("Player1 vesztett");
-                return;
-            }
-            snake1.moveParts(map, ref alma);
-            if (snake1.direction.X != 0 || snake1.direction.Y != 0)
-            {
-                if (snake1.bodyCollide(snake1.bodyparts[0]) || snake1.bodyparts[0].X < 0 || snake1.bodyparts[0].Y < 0 || snake1.bodyparts[0].X > map.mapSize - 1 || snake1.bodyparts[0].Y > map.mapSize - 1)
+                if (snake[i].isDead)
                 {
-                    snake1.isDead = true;
+                    stop();
+                    endSound.Play();
+                    MessageBox.Show("Player " + (i + 1) + " meghalt");
+                    return;
+                }
+
+                snake[i].moveParts(map, snake[i].directionBuffer);
+
+                if (snake[i].direction.X != 0 || snake[i].direction.Y != 0)
+                {
+                    if (snake[i].bodyCollide(snake[i].bodyparts[0]) || snake[i].bodyparts[0].X < 0 || snake[i].bodyparts[0].Y < 0 || snake[i].bodyparts[0].X > map.mapSize - 1 || snake[i].bodyparts[0].Y > map.mapSize - 1)
+                    {
+                        snake[i].isDead = true;
+                    }
+                }
+
+                if (!snake[i].isDead)
+                {
+                    snake[i].snakeRefresh(map);
+                }
+
+                for (int j = 0; j < almalist.Count; j++)
+                {
+                    if (snake[i].headCollide(almalist[j]))
+                    {
+                        almalist[j].action(snake[i], snake);
+                        almalist[j].X = rnd1.Next(map.mapSize);
+                        almalist[j].Y = rnd1.Next(map.mapSize);
+
+                        repositionAlma(almalist[j]);
+                    }
+                }
+
+                if (snake[Math.Abs(i-2+1)].bodyCollide(snake[i].bodyparts[0]))
+                {
+                    snake[Math.Abs(i - 2 + 1)].isDead = true;
+                    endSound.Play();
                 }
             }
 
-            if (!snake1.isDead)
-                snake1.snakeRefresh(map);
+            label3.Text = "Player1: " + Convert.ToInt32(snake[0].score);
+            label4.Text = "Player2: " + Convert.ToInt32(snake[1].score);
 
-            label3.Text = "Score: " + Convert.ToInt32(snake1.score);
-            if (snake1.headCollide(alma))
+            for (int i = 0; i < almalist.Count; i++)
             {
-                snake1.grow();
-                alma.X = rnd1.Next(map.mapSize);
-                alma.Y = rnd1.Next(map.mapSize);
-                snake1.score++;
+                almalist[i].draw(map);
             }
-            //Player2
-            if (snake2.isDead)
-            {
-                stop();
-                MessageBox.Show("Player1 vesztett");
-                return;
-            }
-            snake2.moveParts(map, ref alma);
-            if (snake2.direction.X != 0 || snake2.direction.Y != 0)
-            {
-                if (snake2.bodyCollide(snake2.bodyparts[0]) || snake2.bodyparts[0].X < 0 || snake2.bodyparts[0].Y < 0 || snake2.bodyparts[0].X > map.mapSize - 1 || snake2.bodyparts[0].Y > map.mapSize - 1)
-                {
-                    snake2.isDead = true;
-                }
-            }
-
-            if (!snake2.isDead)
-                snake2.snakeRefresh(map);
-
-            label3.Text = "Score: " + Convert.ToInt32(snake2.score);
-            if (snake2.headCollide(alma))
-            {
-                snake2.grow();
-                alma.X = rnd1.Next(map.mapSize);
-                alma.Y = rnd1.Next(map.mapSize);
-                snake2.score++;
-            }
-
-            map.teliNegyzet(alma.X, alma.Y, Color.Red);
 
             pictureBox1.Image = map.kép;
         }
@@ -139,22 +145,30 @@ namespace Snake
         public void start()
         {
             map.clearBoard();
-            label3.Text = "Score: 0";
             pictureBox1.Image = map.kép;
 
-            snake1 = new Snake(map, new Vector(5, 5), new Vector(0, 0));
-            snake1.score = 0;
+            snake.Clear();
+            snake.Add(new Snake(map, new Vector(2, 5), new Vector(0, 0), player1));
+            snake.Add(new Snake(map, new Vector(map.mapSize - 2, 5), new Vector(0, 0), player2));
 
-            snake2 = new Snake(map, new Vector(5, 5), new Vector(0, 0));
-            snake2.score = 0;
+            almalist.Clear();
+            almalist.Add(new GrowAlma(new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize))));
+            almalist.Add(new BlackAlma(new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize))));
+            almalist.Add(new DoubleGrowAlma(new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize))));
+            almalist.Add(new SpeedBoostAlma(new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize))));
 
-            alma = new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize));
+            drawElements();
+
+            for (int l = 0; l < almalist.Count; l++)
+            {
+                repositionAlma(almalist[l]);
+            }
 
             timer1.Start();
+            pictureBox1.Visible = true;
             started = !started;
             textBox1.Enabled = false;
             textBox2.Enabled = false;
-            map.teliNegyzet(alma.X, alma.Y, Color.Red);
             button1.Text = "Stop";
         }
 
@@ -163,11 +177,46 @@ namespace Snake
             timer1.Stop();
             started = false;
             button1.Text = "Start";
+            textBox1.Enabled = true;
             textBox2.Enabled = true;
-        }        
+        }
+        
+        private void szinToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form2 frm = new Form2(this);
+            frm.Show();
+        }
+
+        public void repositionAlma(Alma alma)
+        {
+            var temp = map.kép.GetPixel(alma.X * map.mapUnit + 1, alma.Y * map.mapUnit + 1);
+            for (int i = 0; i < almalist.Count; i++)
+            {
+                while (!map.kép.GetPixel(alma.X * map.mapUnit + 1, alma.Y * map.mapUnit + 1).Equals(Color.White) && almalist[i].equals(alma) && almalist[i] != alma)
+                {
+                    map.teliNegyzet(alma.X, alma.Y, Color.White);
+                    map.uresNegyzet(alma.X, alma.Y);
+                    alma.X = rnd1.Next(map.mapSize);
+                    alma.Y = rnd1.Next(map.mapSize);
+                    map.teliNegyzet(alma.X, alma.Y, alma.color);
+                }
+            }
+        }
+
+        public void drawElements()
+        {
+            for (int i = 0; i < snake.Count; i++)
+            {
+                snake[i].snakeRefresh(map);
+            }
+            for (int i = 0; i < almalist.Count; i++)
+            {
+                map.teliNegyzet(almalist[i].X, almalist[i].Y, almalist[i].color);
+            }
+        }
     }
 
-    class PlayZone
+    public class PlayZone
     {
         public Bitmap kép = new Bitmap(500, 500);
         public int mapSize;
@@ -208,23 +257,30 @@ namespace Snake
         }
     }
 
-    class Snake
+    public class Snake
     {
         public List<Vector> bodyparts = new List<Vector>();
         public Vector direction;
         public bool isDead;
         private Vector utolso = new Vector();
-        public int score;
+        public int score = 0;
+        public Color color;
         Random rnd = new Random();
+        public int velocity = 1;
+        public int ticksToNextMove = 2;
+        public int speedBoost = 0;
+        public Vector directionBuffer = new Vector("null");
+        List<Vector> removedBpsAt = new List<Vector>();
 
-        public Snake(PlayZone map, Vector startingVector, Vector direction)
+        public Snake(PlayZone map, Vector startingVector, Vector direction, Color color)
         {
             for (int i = 0; i < 3; i++)
             {
                 addPart(new Vector(startingVector.X - direction.X * i, startingVector.Y - direction.Y * i));
-                map.teliNegyzet(bodyparts[i].X, bodyparts[i].Y, Color.Black);
+                map.teliNegyzet(bodyparts[i].X, bodyparts[i].Y, color);
             }
             isDead = false;
+            this.color = color;
             this.direction = direction;
         }
 
@@ -235,21 +291,40 @@ namespace Snake
                 map.teliNegyzet(utolso.X, utolso.Y, Color.White);
                 map.uresNegyzet(utolso.X, utolso.Y);
             }
-            map.teliNegyzet(bodyparts[0].X, bodyparts[0].Y, Color.Black);
+            foreach(Vector element in removedBpsAt)
+            {
+                map.teliNegyzet(element.X, element.Y, Color.White);
+                map.uresNegyzet(element.X, element.Y);
+            }
+            removedBpsAt.Clear();
+            map.teliNegyzet(bodyparts[0].X, bodyparts[0].Y, color);
         }
 
-        public void moveParts(PlayZone map, ref Vector alma)
+        public void moveParts(PlayZone map, Vector directionBuffer)
         {
-            utolso.X = bodyparts[bodyparts.Count - 1].X;
-            utolso.Y = bodyparts[bodyparts.Count - 1].Y;
-
-            for (int i = bodyparts.Count - 1; i > 0; i--)
+            ticksToNextMove -= velocity;
+            if (ticksToNextMove <= 0)
             {
-                bodyparts[i].X = bodyparts[i - 1].X;
-                bodyparts[i].Y = bodyparts[i - 1].Y;
+                changeDirection(directionBuffer);
+                utolso.X = bodyparts[bodyparts.Count - 1].X;
+                utolso.Y = bodyparts[bodyparts.Count - 1].Y;
+
+                for (int i = bodyparts.Count - 1; i > 0; i--)
+                {
+                    bodyparts[i].X = bodyparts[i - 1].X;
+                    bodyparts[i].Y = bodyparts[i - 1].Y;
+                }
+
+                bodyparts[0].add(direction);
+                ticksToNextMove = 2;
+                speedBoost--;
+
             }
 
-            bodyparts[0].add(direction);
+            if (speedBoost <= 0)
+            {
+                velocity = 1;
+            }
         }
 
         public void addPart(Vector Vector)
@@ -259,7 +334,7 @@ namespace Snake
 
         public void changeDirection(Vector direction)
         {
-            if (this.direction.X + direction.X == 0 && this.direction.Y + direction.Y == 0)
+            if (bodyparts[0].X - bodyparts[1].X + direction.X == 0 && bodyparts[0].Y - bodyparts[1].Y + direction.Y == 0)
             {
                 return;
             }
@@ -292,9 +367,18 @@ namespace Snake
         {
             addPart(new Vector(bodyparts[bodyparts.Count - 1].X, bodyparts[bodyparts.Count - 1].Y));
         }
+
+        public void removeBodypart()
+        {
+            if (bodyparts.Count > 2)
+            {
+                removedBpsAt.Add(bodyparts[bodyparts.Count - 1]);
+                bodyparts.RemoveAt(bodyparts.Count - 1);
+            }
+        }
     }
 
-    class Vector
+    public class Vector
     {
         public int X;
         public int Y;
@@ -347,6 +431,99 @@ namespace Snake
         public bool equals(Vector vektor)
         {
             return (vektor.X == X && vektor.Y == Y);
+        }
+
+        public void setVector(int X, int Y)
+        {
+            this.X = X;
+            this.Y = Y;
+        }
+    }
+
+    public abstract class Alma : Vector
+    {
+        public Color color;
+        SoundPlayer almaSound;
+
+        public Alma(Color color, Vector position, string soundPath)
+        {
+            almaSound = new SoundPlayer(soundPath);
+            this.color = color;
+            X = position.X;
+            Y = position.Y;
+        }
+
+        public void draw(PlayZone map)
+        {
+            map.teliNegyzet(X, Y, color);
+        }
+
+        virtual public void action(Snake snake, List<Snake> enemy)
+        {
+            almaSound.Play();
+        }
+    }
+
+    class GrowAlma : Alma
+    {
+        public GrowAlma(Vector position) : base(Color.Red, position, "Air_Woosh_Underwater.wav")
+        {
+        }
+
+        override public void action(Snake snake, List<Snake> enemy)
+        {
+            snake.grow();
+            snake.score++;
+            base.action(snake, enemy);
+        }
+    }
+
+    class BlackAlma : Alma
+    {
+        public BlackAlma(Vector position) : base(Color.Black, position, "18V_Cordless_Drill_Switch.wav")
+        {
+        }
+
+        override public void action(Snake snake, List<Snake> enemy)
+        {
+            foreach (Snake element in enemy)
+            {
+                if (element != snake)
+                {
+                    element.removeBodypart();
+                    element.score--;
+                }
+            }
+            base.action(snake, enemy);
+        }
+    }
+
+    class DoubleGrowAlma : Alma
+    {
+        public DoubleGrowAlma(Vector position) : base(Color.Gold, position, "Air_Woosh_Underwater.wav")
+        {
+        }
+
+        override public void action(Snake snake, List<Snake> enemy)
+        {
+            snake.grow();
+            snake.grow();
+            snake.score += 2;
+            base.action(snake, enemy);
+        }
+    }
+
+    class SpeedBoostAlma : Alma
+    {
+        public SpeedBoostAlma(Vector position) : base(Color.LightPink, position, "Super Mario Bros.-Coin Sound Effect.wav")
+        {
+        }
+
+        override public void action(Snake snake, List<Snake> enemy)
+        {
+            snake.speedBoost = 50;
+            snake.velocity = 2;
+            base.action(snake, enemy);
         }
     }
 }
