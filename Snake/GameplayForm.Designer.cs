@@ -1,6 +1,6 @@
 ﻿namespace Snake
 {
-    partial class Form1
+    partial class GameplayForm
     {
         /// <summary>
         /// Required designer variable.
@@ -168,7 +168,7 @@
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.menuStrip2);
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "Form1";
+            this.Name = "GameplayForm";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.menuStrip2.ResumeLayout(false);

@@ -1,6 +1,6 @@
 ﻿namespace Snake
 {
-    partial class Form2
+    partial class ColorSelectForm
     {
         /// <summary>
         /// Required designer variable.
@@ -205,7 +205,7 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // Form2
+            // ColorSelectForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -228,7 +228,7 @@
             this.Controls.Add(this.hScrollBar1);
             this.Controls.Add(this.pictureBox2);
             this.Name = "Form2";
-            this.Text = "Form2";
+            this.Text = "ColorSelectForm";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
