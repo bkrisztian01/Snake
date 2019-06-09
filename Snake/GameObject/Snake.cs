@@ -24,9 +24,10 @@ namespace Snake
         public int ticksToNextMove = 2;
         public int speedBoost = 0;
         public Vector directionBuffer = new Vector("null");
+        public Dictionary<Keys, Vector> controls = new Dictionary<Keys, Vector>();
         List<Vector> removedBpsAt = new List<Vector>();
 
-        public Snake(PlayZone map, Vector startingVector, Vector direction, Color color)
+        public Snake(PlayZone map, Vector startingVector, Vector direction, Color color, Dictionary<Keys, Vector> controls)
         {
             for (int i = 0; i < 3; i++)
             {
@@ -36,6 +37,7 @@ namespace Snake
             isDead = false;
             this.color = color;
             this.direction = direction;
+            this.controls = controls;
         }
 
         public void snakeRefresh(PlayZone map)

@@ -17,8 +17,6 @@ namespace Snake
         List<Snake> snake = new List<Snake>();
         bool started = false;
         Random rnd1 = new Random();
-        Dictionary<Keys, Vector> keyboardMapping1 = new Dictionary<Keys, Vector>();
-        Dictionary<Keys, Vector> keyboardMapping2 = new Dictionary<Keys, Vector>();
         List<Apple> almalist = new List<Apple>();
         SoundPlayer endSound = new SoundPlayer("Mario Dying Sound.wav");
         public Color player1 = Color.Blue;
@@ -30,16 +28,6 @@ namespace Snake
             map.mapSize = Convert.ToInt32(textBox2.Text);
             map.mapUnit = 500 / map.mapSize;
             timer1.Interval = Convert.ToInt32(textBox1.Text);
-            //Player 1
-            keyboardMapping1.Add(Keys.W, new Vector("up"));
-            keyboardMapping1.Add(Keys.S, new Vector("down"));
-            keyboardMapping1.Add(Keys.A, new Vector("left"));
-            keyboardMapping1.Add(Keys.D, new Vector("right"));
-            //Player 2
-            keyboardMapping2.Add(Keys.Up, new Vector("up"));
-            keyboardMapping2.Add(Keys.Down, new Vector("down"));
-            keyboardMapping2.Add(Keys.Left, new Vector("left"));
-            keyboardMapping2.Add(Keys.Right, new Vector("right"));
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -67,12 +55,13 @@ namespace Snake
         {
             if (started)
             {
-                if (keyboardMapping1.ContainsKey(keyData))
-                    snake[0].directionBuffer = keyboardMapping1[keyData];
+                if (snake[0].controls.ContainsKey(keyData))
+                    snake[0].directionBuffer = snake[0].controls[keyData];
 
-                if (keyboardMapping2.ContainsKey(keyData))
-                    snake[1].directionBuffer = keyboardMapping2[keyData];
+                if (snake[1].controls.ContainsKey(keyData))
+                    snake[1].directionBuffer = snake[1].controls[keyData];
             }
+            
             return base.ProcessCmdKey(ref msg, keyData);
         }
         
@@ -146,16 +135,31 @@ namespace Snake
         {
             map.clearBoard();
             pictureBox1.Image = map.kép;
+            
+            Dictionary<Keys, Vector> keyboardMapping1 = new Dictionary<Keys, Vector>();
+            Dictionary<Keys, Vector> keyboardMapping2 = new Dictionary<Keys, Vector>();
+            
+            //Player 1
+            keyboardMapping1.Add(Keys.W, new Vector("up"));
+            keyboardMapping1.Add(Keys.S, new Vector("down"));
+            keyboardMapping1.Add(Keys.A, new Vector("left"));
+            keyboardMapping1.Add(Keys.D, new Vector("right"));
+            //Player 2
+            keyboardMapping2.Add(Keys.I, new Vector("up"));
+            keyboardMapping2.Add(Keys.K, new Vector("down"));
+            keyboardMapping2.Add(Keys.J, new Vector("left"));
+            keyboardMapping2.Add(Keys.L, new Vector("right"));
 
             snake.Clear();
-            snake.Add(new Snake(map, new Vector(2, 5), new Vector(0, 0), player1));
-            snake.Add(new Snake(map, new Vector(map.mapSize - 2, 5), new Vector(0, 0), player2));
+            snake.Add(new Snake(map, new Vector(2, 5), new Vector(0, 0), player1, keyboardMapping1));
+            snake.Add(new Snake(map, new Vector(map.mapSize - 2, 5), new Vector(0, 0), player2, keyboardMapping2));
 
             almalist.Clear();
             almalist.Add(new GrowApple(new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize))));
             almalist.Add(new BlackApple(new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize))));
             almalist.Add(new DoubleGrowApple(new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize))));
             almalist.Add(new SpeedBoostApple(new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize))));
+            almalist.Add(new ChangeControlApple(new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize))));
 
             drawElements();
 
