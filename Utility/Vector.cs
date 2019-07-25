@@ -34,27 +34,27 @@ namespace Snake
         }
         public Vector(string direction)
         {
-            if (direction == "Null")
+            if (direction == "null")
             {
                 X = 0;
                 Y = 0;
             }
-            else if (direction == "Up")
+            else if (direction == "up")
             {
                 X = 0;
                 Y = -1;
             }
-            else if (direction == "Down")
+            else if (direction == "down")
             {
                 X = 0;
                 Y = 1;
             }
-            else if (direction == "Left")
+            else if (direction == "left")
             {
                 X = -1;
                 Y = 0;
             }
-            else if (direction == "Right")
+            else if (direction == "right")
             {
                 X = 1;
                 Y = 0;

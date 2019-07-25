@@ -18,7 +18,8 @@ namespace Snake
 
         public Apple(Color color, Vector position, string soundPath)
         {
-            eatSound = new SoundPlayer(soundPath);
+            //TODO: Sounds
+            //eatSound = new SoundPlayer(soundPath);
             this.color = color;
             X = position.X;
             Y = position.Y;
@@ -31,7 +32,14 @@ namespace Snake
 
         virtual public void action(Snake snake, List<Snake> enemy)
         {
-            eatSound.Play();
+            //try
+            //{
+            //    eatSound.Play();
+            //}
+            //catch (Exception e)
+            //{
+
+            //}
         }
     }
 }

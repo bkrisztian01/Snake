@@ -8,10 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Media;
-using System.IO;
-using System.Xml;
-using System.Xml.Serialization;
-
 
 namespace Snake
 {
@@ -21,20 +17,24 @@ namespace Snake
         List<Snake> snake = new List<Snake>();
         bool started = false;
         Random rnd1 = new Random();
-        List<Apple> appleList = new List<Apple>();
+        List<Apple> applelist = new List<Apple>();
         SoundPlayer endSound = new SoundPlayer("Mario Dying Sound.wav");
+        public Color player1 = Color.Blue;
+        public Color player2 = Color.Green;
         public int appleCount = 5;
-        
+        public int growAppleChance = 20;
+        public int doubleGrowAppleChance = 20;
+        public int changeControlAppleChance = 20;
+        public int speedBoostAppleChance = 20;
+        public int blackAppleChance = 20;
+
+
         public GameplayForm()
         {
             InitializeComponent();
-
             map.mapSize = Convert.ToInt32(textBox2.Text);
             map.mapUnit = 500 / map.mapSize;
             timer1.Interval = Convert.ToInt32(textBox1.Text);
-
-            PlayerCountForm form = new PlayerCountForm();
-            form.ShowDialog();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -62,12 +62,11 @@ namespace Snake
         {
             if (started)
             {
-                for (int i = 0; i < Convert.ToInt32(Config.Instance.Get("PlayerCount")); i++)
-                {
-                    if (snake[i].controls.ContainsKey(keyData))
-                        snake[i].directionBuffer = snake[i].controls[keyData];
+                if (snake[0].controls.ContainsKey(keyData))
+                    snake[0].directionBuffer = snake[0].controls[keyData];
 
-                }
+                if (snake[1].controls.ContainsKey(keyData))
+                    snake[1].directionBuffer = snake[1].controls[keyData];
             }
             
             return base.ProcessCmdKey(ref msg, keyData);
@@ -90,7 +89,7 @@ namespace Snake
                 {
                     stop();
                     //endSound.Play();
-                    MessageBox.Show("Player "+ (i + 1) + " is dead");
+                    MessageBox.Show("Player " + (i + 1) + " is dead");
                     return;
                 }
 
@@ -109,15 +108,15 @@ namespace Snake
                     snake[i].snakeRefresh(map);
                 }
 
-                for (int j = 0; j < appleList.Count; j++)
+                for (int j = 0; j < applelist.Count; j++)
                 {
-                    if (snake[i].headCollide(appleList[j]))
+                    if (snake[i].headCollide(applelist[j]))
                     {
-                        appleList[j].action(snake[i], snake);
-                        appleList.RemoveAt(j);
+                        applelist[j].action(snake[i], snake);
+                        applelist.RemoveAt(j);
                         generateRandomApple();
 
-                        repositionApple(appleList[appleCount - 1]);
+                        repositionApple(applelist[appleCount - 1]);
                     }
                 }
 
@@ -140,9 +139,9 @@ namespace Snake
             label3.Text = "Player1: " + Convert.ToInt32(snake[0].score);
             label4.Text = "Player2: " + Convert.ToInt32(snake[1].score);
 
-            for (int i = 0; i < appleList.Count; i++)
+            for (int i = 0; i < applelist.Count; i++)
             {
-                appleList[i].draw(map);
+                applelist[i].draw(map);
             }
 
             pictureBox1.Image = map.kép;
@@ -152,44 +151,26 @@ namespace Snake
         {
             map.clearBoard();
             pictureBox1.Image = map.kép;
+            
+            Dictionary<Keys, Vector> keyboardMapping1 = new Dictionary<Keys, Vector>();
+            Dictionary<Keys, Vector> keyboardMapping2 = new Dictionary<Keys, Vector>();
+            
+            //Player 1
+            keyboardMapping1.Add(Keys.W, new Vector("up"));
+            keyboardMapping1.Add(Keys.S, new Vector("down"));
+            keyboardMapping1.Add(Keys.A, new Vector("left"));
+            keyboardMapping1.Add(Keys.D, new Vector("right"));
+            //Player 2
+            keyboardMapping2.Add(Keys.I, new Vector("up"));
+            keyboardMapping2.Add(Keys.K, new Vector("down"));
+            keyboardMapping2.Add(Keys.J, new Vector("left"));
+            keyboardMapping2.Add(Keys.L, new Vector("right"));
 
             snake.Clear();
+            snake.Add(new Snake(map, new Vector(2, 5), new Vector(0, 0), player1, keyboardMapping1));
+            snake.Add(new Snake(map, new Vector(map.mapSize - 2, 5), new Vector(0, 0), player2, keyboardMapping2));
 
-            string[] directions = new string[]
-            {
-                "Up", "Down", "Left", "Right"
-            };
-
-            for (int i = 0; i < Convert.ToInt32(Config.Instance.Get("PlayerCount")); i++)
-            {
-                Dictionary<Keys, Vector> keyboardMapping = new Dictionary<Keys, Vector>();
-                for (int j = 0; j < directions.Length; j++)
-                {
-                    if (Config.Instance.IDExists(directions[j] + (i + 1)) && Config.Instance.Get(directions[j] + (i + 1)) != "")
-                    {
-
-                        keyboardMapping.Add((Keys)Enum.Parse(typeof(Keys), Config.Instance.Get(directions[j] + (i + 1))), new Vector(directions[j]));
-                    }
-                    else
-                    {
-                        MessageBox.Show("Keybind " + (directions[j] + (i + 1)) + " was not set!", directions[j] + (i + 1));
-                        return;
-                    }
-                }
-                if (Config.Instance.IDExists("Color" + (i + 1)))
-                {
-                    snake.Add(new Snake(map, new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize)), Color.FromArgb(Convert.ToInt32(Config.Instance.Get("Color" + (i + 1)))), keyboardMapping));
-                }
-                else
-                {
-                    MessageBox.Show("Color" + (i + 1) + " was not set!");
-                    return;
-                }
-            }
-
-            appleCount = Convert.ToInt32(Config.Instance.Get("AppleCount"));
-
-            appleList.Clear();
+            applelist.Clear();
             for (int i = 0; i < appleCount; i++)
             {
                 generateRandomApple();
@@ -197,9 +178,9 @@ namespace Snake
 
             drawElements();
 
-            for (int l = 0; l < appleList.Count; l++)
+            for (int l = 0; l < applelist.Count; l++)
             {
-                repositionApple(appleList[l]);
+                repositionApple(applelist[l]);
             }
 
             timer1.Start();
@@ -218,13 +199,19 @@ namespace Snake
             textBox1.Enabled = true;
             textBox2.Enabled = true;
         }
+        
+        private void szinToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorSelectForm frm = new ColorSelectForm(this);
+            frm.Show();
+        }
 
         public void repositionApple(Apple apple)
         {
             var temp = map.kép.GetPixel(apple.X * map.mapUnit + 1, apple.Y * map.mapUnit + 1);
-            for (int i = 0; i < appleList.Count; i++)
+            for (int i = 0; i < applelist.Count; i++)
             {
-                while (!map.kép.GetPixel(apple.X * map.mapUnit + 1, apple.Y * map.mapUnit + 1).Equals(Color.White) && appleList[i].equals(apple) && appleList[i] != apple)
+                while (!map.kép.GetPixel(apple.X * map.mapUnit + 1, apple.Y * map.mapUnit + 1).Equals(Color.White) && applelist[i].equals(apple) && applelist[i] != apple)
                 {
                     map.teliNegyzet(apple.X, apple.Y, Color.White);
                     map.uresNegyzet(apple.X, apple.Y);
@@ -237,24 +224,32 @@ namespace Snake
 
         public void generateRandomApple()
         {
-            List<Type> appleTypes = typeof(Apple).Assembly.GetTypes().Where(type => type.IsSubclassOf(typeof(Apple))).ToList();
-            List<int> appleChances = new List<int>();
-            for (int i = 0; i < appleTypes.Count; i++)
+            int rndNumber = rnd1.Next(1, 101);
+
+            //GrowApple
+            if (rndNumber <= growAppleChance)
             {
-                appleChances.Add(Convert.ToInt32(Config.Instance.Get(appleTypes[i].ToString().Substring(6) + "Chance")));
+                applelist.Add(new GrowApple(new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize))));
             }
-
-            float rndNumber = rnd1.Next(1, Convert.ToInt32(appleChances.Sum()));
-
-            int appleChanceCounter = 0;
-            for (int i = 0; i < appleTypes.Count; i++)
+            //DoubleGrowApple
+            else if (growAppleChance < rndNumber && rndNumber <= growAppleChance + doubleGrowAppleChance)
             {
-                appleChanceCounter += appleChances[i];
-                if(appleChanceCounter >= rndNumber)
-                {
-                    appleList.Add((Apple)Activator.CreateInstance(appleTypes[i], new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize))));
-                    break;
-                }
+                applelist.Add(new DoubleGrowApple(new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize))));
+            }
+            //ChangeControlApple
+            else if (growAppleChance + doubleGrowAppleChance < rndNumber && rndNumber <= growAppleChance + doubleGrowAppleChance + changeControlAppleChance)
+            {
+                applelist.Add(new ChangeControlApple(new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize))));
+            }
+            //SpeedBoostApple
+            else if (growAppleChance + doubleGrowAppleChance + changeControlAppleChance < rndNumber && rndNumber <= growAppleChance + doubleGrowAppleChance + changeControlAppleChance + speedBoostAppleChance)
+            {
+                applelist.Add(new SpeedBoostApple(new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize))));
+            }
+            //BlackApple
+            else if (growAppleChance + doubleGrowAppleChance + changeControlAppleChance + speedBoostAppleChance < rndNumber && rndNumber <= growAppleChance + doubleGrowAppleChance + changeControlAppleChance + speedBoostAppleChance + blackAppleChance)
+            {
+                applelist.Add(new BlackApple(new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize))));
             }
         }
 
@@ -264,28 +259,16 @@ namespace Snake
             {
                 snake[i].snakeRefresh(map);
             }
-            for (int i = 0; i < appleList.Count; i++)
+            for (int i = 0; i < applelist.Count; i++)
             {
-                map.teliNegyzet(appleList[i].X, appleList[i].Y, appleList[i].color);
+                map.teliNegyzet(applelist[i].X, applelist[i].Y, applelist[i].color);
             }
-        }
-        
-        private void playerColorsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ColorSelectForm frm = new ColorSelectForm();
-            frm.ShowDialog();
         }
 
         private void appleSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AppleSettingsForm frm = new AppleSettingsForm();
-            frm.ShowDialog();
-        }
-
-        private void controlsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ControlSettingsForm frm = new ControlSettingsForm();
-            frm.ShowDialog();
+            AppleSettingsForm frm = new AppleSettingsForm(this);
+            frm.Show();
         }
     }
 }

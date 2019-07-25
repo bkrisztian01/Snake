@@ -14,7 +14,7 @@ namespace Snake
     public class Snake
     {
         public List<Vector> bodyparts = new List<Vector>();
-        public Vector direction = new Vector(0, 0);
+        public Vector direction;
         public bool isDead;
         private Vector utolso = new Vector();
         public int score = 0;
@@ -27,7 +27,7 @@ namespace Snake
         public Dictionary<Keys, Vector> controls = new Dictionary<Keys, Vector>();
         List<Vector> removedBpsAt = new List<Vector>();
 
-        public Snake(PlayZone map, Vector startingVector, Color color, Dictionary<Keys, Vector> controls = null)
+        public Snake(PlayZone map, Vector startingVector, Vector direction, Color color, Dictionary<Keys, Vector> controls)
         {
             for (int i = 0; i < 3; i++)
             {
@@ -36,15 +36,8 @@ namespace Snake
             }
             isDead = false;
             this.color = color;
-
-            if (controls == null)
-            {
-                controls = new Dictionary<Keys, Vector>();
-            }
-            else
-            {
-                this.controls = controls;
-            }
+            this.direction = direction;
+            this.controls = controls;
         }
 
         public void snakeRefresh(PlayZone map)

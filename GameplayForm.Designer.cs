@@ -41,7 +41,6 @@
             this.menuStrip2 = new System.Windows.Forms.MenuStrip();
             this.szinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.appleSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.controlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip2.SuspendLayout();
             this.SuspendLayout();
@@ -132,8 +131,7 @@
             // 
             this.menuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.szinToolStripMenuItem,
-            this.appleSettingsToolStripMenuItem,
-            this.controlsToolStripMenuItem});
+            this.appleSettingsToolStripMenuItem});
             this.menuStrip2.Location = new System.Drawing.Point(0, 0);
             this.menuStrip2.Name = "menuStrip2";
             this.menuStrip2.Size = new System.Drawing.Size(500, 24);
@@ -143,9 +141,9 @@
             // szinToolStripMenuItem
             // 
             this.szinToolStripMenuItem.Name = "szinToolStripMenuItem";
-            this.szinToolStripMenuItem.Size = new System.Drawing.Size(88, 20);
-            this.szinToolStripMenuItem.Text = "Player Colors";
-            this.szinToolStripMenuItem.Click += new System.EventHandler(this.playerColorsToolStripMenuItem_Click);
+            this.szinToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
+            this.szinToolStripMenuItem.Text = "Szin";
+            this.szinToolStripMenuItem.Click += new System.EventHandler(this.szinToolStripMenuItem_Click);
             // 
             // appleSettingsToolStripMenuItem
             // 
@@ -153,13 +151,6 @@
             this.appleSettingsToolStripMenuItem.Size = new System.Drawing.Size(95, 20);
             this.appleSettingsToolStripMenuItem.Text = "Apple Settings";
             this.appleSettingsToolStripMenuItem.Click += new System.EventHandler(this.appleSettingsToolStripMenuItem_Click);
-            // 
-            // controlsToolStripMenuItem
-            // 
-            this.controlsToolStripMenuItem.Name = "controlsToolStripMenuItem";
-            this.controlsToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
-            this.controlsToolStripMenuItem.Text = "Controls";
-            this.controlsToolStripMenuItem.Click += new System.EventHandler(this.controlsToolStripMenuItem_Click);
             // 
             // GameplayForm
             // 
@@ -199,7 +190,6 @@
         private System.Windows.Forms.MenuStrip menuStrip2;
         private System.Windows.Forms.ToolStripMenuItem szinToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem appleSettingsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem controlsToolStripMenuItem;
     }
 }
 

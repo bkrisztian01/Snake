@@ -52,18 +52,6 @@
     <Compile Include="AppleSettingsForm.Designer.cs">
       <DependentUpon>AppleSettingsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlSettingsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ControlSettingsForm.Designer.cs">
-      <DependentUpon>ControlSettingsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PlayerCountForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PlayerCountForm.Designer.cs">
-      <DependentUpon>PlayerCountForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="GameObject\ChangeControlApple.cs" />
     <Compile Include="GameplayForm.cs">
       <SubType>Form</SubType>
@@ -71,12 +59,8 @@
     <Compile Include="GameplayForm.Designer.cs">
       <DependentUpon>GameplayForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ColorSelectForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ColorSelectForm.Designer.cs">
-      <DependentUpon>ColorSelectForm.cs</DependentUpon>
-  </Compile>
+    <Compile Include="ColorSelectForm.cs" />
+    <Compile Include="ColorSelectForm.Designer.cs" />
     <Compile Include="GameObject\Apple.cs" />
     <Compile Include="GameObject\BlackApple.cs" />
     <Compile Include="GameObject\DoubleGrowApple.cs" />
@@ -86,16 +70,9 @@
     <Compile Include="PlayZone.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utility\Config.cs" />
     <Compile Include="Utility\Vector.cs" />
     <EmbeddedResource Include="AppleSettingsForm.resx">
       <DependentUpon>AppleSettingsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ControlSettingsForm.resx">
-      <DependentUpon>ControlSettingsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PlayerCountForm.resx">
-      <DependentUpon>PlayerCountForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GameplayForm.resx">
       <DependentUpon>GameplayForm.cs</DependentUpon>
