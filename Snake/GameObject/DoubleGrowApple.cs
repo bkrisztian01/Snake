@@ -21,7 +21,6 @@ namespace Snake
         {
             snake.grow();
             snake.grow();
-            snake.score += 2;
             base.action(snake, enemy);
         }
     }

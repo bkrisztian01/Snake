@@ -27,7 +27,7 @@ namespace Snake
 
         public void draw(PlayZone map)
         {
-            map.teliNegyzet(X, Y, color);
+            map.drawApple(X, Y, color);
         }
 
         virtual public void action(Snake snake, List<Snake> enemy)

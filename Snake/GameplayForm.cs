@@ -137,9 +137,6 @@ namespace Snake
                 }
             }
 
-            label3.Text = "Player1: " + Convert.ToInt32(snake[0].score);
-            label4.Text = "Player2: " + Convert.ToInt32(snake[1].score);
-
             for (int i = 0; i < appleList.Count; i++)
             {
                 appleList[i].draw(map);

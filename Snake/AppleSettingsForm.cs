@@ -28,7 +28,7 @@ namespace Snake
             appleChances.Add(float.Parse(Config.Instance.Get("SpeedBoostAppleChance")));
             appleChances.Add(float.Parse(Config.Instance.Get("BlackAppleChance")));
 
-            textBox1.Text = Config.Instance.Get("AppleCount");
+            numericUpDown1.Value = Convert.ToInt32(Config.Instance.Get("AppleCount"));
             
             scrollBars.Add(hScrollBar1);
             scrollBars.Add(hScrollBar2);
@@ -101,20 +101,20 @@ namespace Snake
 
         private void button1_Click(object sender, EventArgs e)
         {
-            int appleCount;
-            if (!int.TryParse(textBox1.Text.Trim(), out appleCount))
-            {
-                MessageBox.Show("Invalid value");
-                return;
-            }
+            //int appleCount;
+            //if (!int.TryParse(numericUpDown1.Text.Trim(), out appleCount))
+            //{
+            //    MessageBox.Show("Invalid value");
+            //    return;
+            //}
 
-            Config.Instance.Set("GrowAppleChance", appleChances[0].ToString());
-            Config.Instance.Set("DoubleGrowAppleChance", appleChances[1].ToString());
-            Config.Instance.Set("ChangeControlAppleChance", appleChances[2].ToString());
-            Config.Instance.Set("SpeedBoostAppleChance", appleChances[3].ToString());
-            Config.Instance.Set("BlackAppleChance", appleChances[4].ToString());
+            Config.Instance.Set("GrowAppleChance", Convert.ToInt32(appleChances[0]).ToString());
+            Config.Instance.Set("DoubleGrowAppleChance", Convert.ToInt32(appleChances[1]).ToString());
+            Config.Instance.Set("ChangeControlAppleChance", Convert.ToInt32(appleChances[2]).ToString());
+            Config.Instance.Set("SpeedBoostAppleChance", Convert.ToInt32(appleChances[3]).ToString());
+            Config.Instance.Set("BlackAppleChance", Convert.ToInt32(appleChances[4]).ToString());
 
-            Config.Instance.Set("AppleCount", appleCount.ToString());
+            Config.Instance.Set("AppleCount", numericUpDown1.Value.ToString());
 
             Config.Instance.StoreCfgFile();
 

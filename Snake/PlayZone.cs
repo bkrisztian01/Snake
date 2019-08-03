@@ -14,6 +14,7 @@ namespace Snake
     public class PlayZone
     {
         public Bitmap kép = new Bitmap(500, 500);
+        Bitmap apple = new Bitmap("apple.png");
         public int mapSize;
         public int mapUnit;
 
@@ -49,6 +50,29 @@ namespace Snake
                     uresNegyzet(i, j);
                 }
             }
+        }
+
+        public void drawApple(int x, int y, Color color)
+        {
+            for (int i = 0; i < apple.Size.Height; i++)
+            {
+                for (int j = 0; j < apple.Size.Width; j++)
+                {
+                    if (apple.GetPixel(i, j).Equals(Color.FromArgb(255, 255, 0, 0)))
+                    {
+                        kép.SetPixel(x * mapUnit + i, y * mapUnit + j, color);
+                    }
+                    else if (apple.GetPixel(i, j).A == 0)
+                    {
+                        kép.SetPixel(x * mapUnit + i, y * mapUnit + j, Color.White);
+                    }
+                    else
+                    {
+                        kép.SetPixel(x * mapUnit + i, y * mapUnit + j, apple.GetPixel(i, j));
+                    }
+                }
+            }
+            uresNegyzet(x, y);
         }
     }
 }

@@ -24,7 +24,6 @@ namespace Snake
                 if (element != snake)
                 {
                     element.removeBodypart();
-                    element.score--;
                 }
             }
             base.action(snake, enemy);

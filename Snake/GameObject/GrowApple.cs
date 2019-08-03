@@ -20,7 +20,6 @@ namespace Snake
         override public void action(Snake snake, List<Snake> enemy)
         {
             snake.grow();
-            snake.score++;
             base.action(snake, enemy);
         }
     }
