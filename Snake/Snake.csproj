@@ -76,7 +76,7 @@
     </Compile>
     <Compile Include="ColorSelectForm.Designer.cs">
       <DependentUpon>ColorSelectForm.cs</DependentUpon>
-  </Compile>
+    </Compile>
     <Compile Include="GameObject\Apple.cs" />
     <Compile Include="GameObject\BlackApple.cs" />
     <Compile Include="GameObject\DoubleGrowApple.cs" />
@@ -126,6 +126,7 @@
     <Content Include="ColorSelectForm.resx">
       <DependentUpon>ColorSelectForm.cs</DependentUpon>
     </Content>
+    <EmbeddedResource Include="whatthef.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

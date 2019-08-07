@@ -18,6 +18,10 @@ namespace Snake
         List<PictureBox> previewPBs = new List<PictureBox>();
         Button saveButton = new Button();
         Random rnd = new Random();
+        string[] rgbChar = new string[] 
+            {
+                "R", "G", "B"
+            };
 
         public ColorSelectForm()
         {
@@ -29,7 +33,12 @@ namespace Snake
                 colors.Add(Color.FromArgb(Convert.ToInt32(colorsTemp["Color" + (i + 1)])));
             }
 
-            string[] rgbChar = new string[] { "R", "G", "B" };
+            int rowCounter = 0;
+            int leftMargin = 10;
+            int topMargin = 9;
+            int playerSpacing = 9;
+            int scrollBarSpacing = 17;
+            int rgbLabelTextBoxSpacing = 25;
 
             for (int i = 0; i < Convert.ToInt32(Config.Instance.Get("PlayerCount")); i++)
             {
@@ -37,34 +46,40 @@ namespace Snake
                 {
                     colors.Add(Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256)));
                 }
-                
-                labels.Add(new Label());
-                labels[i * 4].Location = new Point(10, 9 + (9 * i) + (17 * 4 * i));
-                labels[i * 4].AutoSize = true;
-                labels[i * 4].Name = "label" + "Player" + i.ToString();
-                labels[i * 4].Text = "Player " + (i + 1);
-                labels[i * 4].Visible = true;
-                this.Controls.Add(labels[i * 4]);
+
+                Label playerLabel = new Label();
+                playerLabel.Location = new Point(leftMargin, topMargin + (playerSpacing * i) + (scrollBarSpacing * rowCounter));
+                playerLabel.AutoSize = true;
+                playerLabel.Name = "label" + "Player" + i.ToString();
+                playerLabel.Text = "Player " + (i + 1);
+                playerLabel.Visible = true;
+                this.Controls.Add(playerLabel);
+                labels.Add(playerLabel);
+                rowCounter++;
 
                 for (int j = 0; j < 3; j++)
                 {
-                    labels.Add(new Label());
-                    labels[i * 3 + (i + 1) + j].Location = new Point(10, 9 + 17 + (9 * i) + (17 * 4 * i) + (17 * j));
-                    labels[i * 3 + (i + 1) + j].AutoSize = true;
-                    labels[i * 3 + (i + 1) + j].Name = "label" + rgbChar[j] + i.ToString();
-                    labels[i * 3 + (i + 1) + j].Text = rgbChar[j];
-                    labels[i * 3 + (i + 1) + j].Visible = true;
-                    this.Controls.Add(labels[i * 3 + (i + 1) + j]);
+                    Label colorLabel = new Label();
+                    colorLabel.Location = new Point(leftMargin, topMargin + (playerSpacing * i) + (scrollBarSpacing * rowCounter));
+                    colorLabel.AutoSize = true;
+                    colorLabel.Name = "label" + rgbChar[j] + i.ToString();
+                    colorLabel.Text = rgbChar[j];
+                    colorLabel.Visible = true;
+                    this.Controls.Add(colorLabel);
+                    labels.Add(colorLabel);
 
-                    scrollBars.Add(new HScrollBar());
-                    scrollBars[i * 3 + j].Location = new Point(25, 9 + 17 + (9 * i) + (17 * 4 * i) + (17 * j));
-                    scrollBars[i * 3 + j].Maximum = 255;
-                    scrollBars[i * 3 + j].Name = "scrollBar" + rgbChar[j] + i.ToString();
-                    scrollBars[i * 3 + j].Size = new Size(80, 17);
-                    scrollBars[i * 3 + j].Scroll += new ScrollEventHandler(this.scrollBar_Scroll);
-                    this.Controls.Add(scrollBars[i * 3 + j]);
+                    HScrollBar colorScrollBar = new HScrollBar();
+                    colorScrollBar.Location = new Point(rgbLabelTextBoxSpacing, topMargin + (playerSpacing * i) + (scrollBarSpacing * rowCounter));
+                    colorScrollBar.Maximum = 255;
+                    colorScrollBar.Name = "scrollBar" + rgbChar[j] + i.ToString();
+                    colorScrollBar.Size = new Size(80, 17);
+                    colorScrollBar.Scroll += new ScrollEventHandler(this.scrollBar_Scroll);
+                    this.Controls.Add(colorScrollBar);
+                    scrollBars.Add(colorScrollBar);
+
+                    rowCounter++;
                 }
-
+                
                 scrollBars[i * 3].Value = colors[i].R;
                 scrollBars[i * 3 + 1].Value = colors[i].G;
                 scrollBars[i * 3 + 2].Value = colors[i].B;

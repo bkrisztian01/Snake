@@ -11,18 +11,22 @@ using System.Media;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Resources;
+using System.Diagnostics;
+using System.Reflection;
 
 
 namespace Snake
 {
     public partial class GameplayForm : Form
     {
+        Assembly assembly;
         PlayZone map = new PlayZone();
         List<Snake> snake = new List<Snake>();
         bool started = false;
         Random rnd1 = new Random();
         List<Apple> appleList = new List<Apple>();
-        SoundPlayer endSound = new SoundPlayer("Mario Dying Sound.wav");
+        SoundPlayer endSound;
         public int appleCount = 5;
         
         public GameplayForm()
@@ -32,6 +36,9 @@ namespace Snake
             map.mapSize = Convert.ToInt32(textBox2.Text);
             map.mapUnit = 500 / map.mapSize;
             timer1.Interval = Convert.ToInt32(textBox1.Text);
+
+            assembly = Assembly.GetExecutingAssembly();
+            endSound = new SoundPlayer(assembly.GetManifestResourceStream("Snake.whatthef.wav"));
 
             PlayerCountForm form = new PlayerCountForm();
             form.ShowDialog();
@@ -89,7 +96,7 @@ namespace Snake
                 if (snake[i].isDead)
                 {
                     stop();
-                    //endSound.Play();
+                    endSound.Play();
                     MessageBox.Show("Player "+ (i + 1) + " is dead");
                     return;
                 }
@@ -157,14 +164,13 @@ namespace Snake
                 "Up", "Down", "Left", "Right"
             };
 
-            for (int i = 0; i < Convert.ToInt32(Config.Instance.Get("PlayerCount")); i++)
+            for (int i = 0; i < Convert.ToInt32(Config.Instance.Get("PlayerCount")); i++) //TODO: Snakes on top of each other fix
             {
                 Dictionary<Keys, Vector> keyboardMapping = new Dictionary<Keys, Vector>();
                 for (int j = 0; j < directions.Length; j++)
                 {
                     if (Config.Instance.IDExists(directions[j] + (i + 1)) && Config.Instance.Get(directions[j] + (i + 1)) != "")
                     {
-
                         keyboardMapping.Add((Keys)Enum.Parse(typeof(Keys), Config.Instance.Get(directions[j] + (i + 1))), new Vector(directions[j]));
                     }
                     else
@@ -173,15 +179,19 @@ namespace Snake
                         return;
                     }
                 }
+
+                Color snakeColor;
                 if (Config.Instance.IDExists("Color" + (i + 1)))
                 {
-                    snake.Add(new Snake(map, new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize)), Color.FromArgb(Convert.ToInt32(Config.Instance.Get("Color" + (i + 1)))), keyboardMapping));
+                    snakeColor = Color.FromArgb(Convert.ToInt32(Config.Instance.Get("Color" + (i + 1))));
                 }
                 else
                 {
                     MessageBox.Show("Color" + (i + 1) + " was not set!");
                     return;
                 }
+
+                snake.Add(new Snake(map, new Vector(rnd1.Next(map.mapSize), rnd1.Next(map.mapSize)), snakeColor, keyboardMapping));
             }
 
             appleCount = Convert.ToInt32(Config.Instance.Get("AppleCount"));
@@ -204,6 +214,9 @@ namespace Snake
             started = !started;
             textBox1.Enabled = false;
             textBox2.Enabled = false;
+            szinToolStripMenuItem.Enabled = false;
+            appleSettingsToolStripMenuItem.Enabled = false;
+            controlsToolStripMenuItem.Enabled = false;
             button1.Text = "Stop";
         }
 
@@ -214,6 +227,9 @@ namespace Snake
             button1.Text = "Start";
             textBox1.Enabled = true;
             textBox2.Enabled = true;
+            szinToolStripMenuItem.Enabled = true;
+            appleSettingsToolStripMenuItem.Enabled = true;
+            controlsToolStripMenuItem.Enabled = true;
         }
 
         public void repositionApple(Apple apple)

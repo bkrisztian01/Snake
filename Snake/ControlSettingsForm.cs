@@ -26,32 +26,49 @@ namespace Snake
         {
             InitializeComponent();
 
+            int rowCounter = 0;
+            int leftMargin = 10;
+            int topMargin = 9;
+            int playerSpacing = 9;
+            int textBoxSpacing = 22;
+            int bindLabelTextBoxSpacing = 52;
+
             for (int i = 0; i < Convert.ToInt32(Config.Instance.Get("PlayerCount")); i++)
             {
-                labels.Add(new Label());
-                labels[i * 5].Location = new Point(10, 9 + (9 * i) + (22 * 5 * i));
-                labels[i * 5].AutoSize = true;
-                labels[i * 5].Name = "label" + "Player" + (i + 1).ToString();
-                labels[i * 5].Text = "Player " + (i + 1);
-                labels[i * 5].Visible = true;
-                this.Controls.Add(labels[i * 5]);
+                Label playerLabel = new Label();
+                playerLabel.Location = new Point(leftMargin, topMargin + (playerSpacing * i) + (textBoxSpacing * rowCounter));
+                playerLabel.AutoSize = true;
+                playerLabel.Name = "label" + "Player" + (i + 1).ToString();
+                playerLabel.Text = "Player " + (i + 1);
+                playerLabel.Visible = true;
+                this.Controls.Add(playerLabel);
+                labels.Add(playerLabel);
+
+                rowCounter++;
 
                 for (int j = 0; j < 4; j++)
                 {
-                    labels.Add(new Label());
-                    labels[(i * 5) + j + 1].Location = new Point(10, 9 + 22 + (9 * i) + (22 * 5 * i) + (22 * j));
-                    labels[(i * 5) + j + 1].AutoSize = true;
-                    labels[(i * 5) + j + 1].Name = "label" + binds[j] + (i + 1).ToString();
-                    labels[(i * 5) + j + 1].Text = binds[j] + (i + 1);
-                    labels[(i * 5) + j + 1].Visible = true;
-                    this.Controls.Add(labels[(i * 5) + j + 1]);
-                    textBoxes.Add(new TextBox());
-                    textBoxes[(i * 4 + j)].Location = new System.Drawing.Point(52, 9 + 22 + (9 * i) + (22 * 5 * i) + (22 * j));
-                    textBoxes[(i * 4 + j)].Name = "tb" + binds[j] + (i + 1).ToString();
-                    textBoxes[(i * 4 + j)].Size = new System.Drawing.Size(100, 20);
-                    textBoxes[(i * 4 + j)].Visible = true;
-                    this.Controls.Add(textBoxes[(i * 4 + j)]);
-                }                
+                    string directionBind = binds[j];
+
+                    Label directionBindLabel = new Label();
+                    directionBindLabel.Location = new Point(leftMargin, topMargin + (playerSpacing * i) + (textBoxSpacing * rowCounter));
+                    directionBindLabel.AutoSize = true;
+                    directionBindLabel.Name = "label" + directionBind + (i + 1).ToString();
+                    directionBindLabel.Text = directionBind + (i + 1);
+                    directionBindLabel.Visible = true;
+                    this.Controls.Add(directionBindLabel);
+                    labels.Add(directionBindLabel);
+
+                    TextBox directionBindTextBox = new TextBox();
+                    directionBindTextBox.Location = new Point(bindLabelTextBoxSpacing, topMargin + (playerSpacing * i) + (textBoxSpacing * rowCounter));
+                    directionBindTextBox.Name = "tb" + directionBind + (i + 1).ToString();
+                    directionBindTextBox.Size = new Size(100, 20);
+                    directionBindTextBox.Visible = true;
+                    this.Controls.Add(directionBindTextBox);
+                    textBoxes.Add(directionBindTextBox);
+
+                    rowCounter++;
+                }
             }
 
             saveButton.Name = "saveButton";
