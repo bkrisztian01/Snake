@@ -13,7 +13,7 @@ namespace Snake
 {
     class BlackApple : Apple
     {
-        public BlackApple(Vector position) : base(Color.Black, position, "18V_Cordless_Drill_Switch.wav")
+        public BlackApple(Vector position) : base(Color.Black, position, "Snake.Sounds.shrinkSound.wav")
         {
         }
 

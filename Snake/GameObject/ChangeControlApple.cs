@@ -13,7 +13,7 @@ namespace Snake
 {
     class ChangeControlApple : Apple
     {
-        public ChangeControlApple(Vector position) : base(Color.Purple, position, String.Empty)
+        public ChangeControlApple(Vector position) : base(Color.Purple, position, "Snake.Sounds.changeControlSound.wav")
         {
         }
 

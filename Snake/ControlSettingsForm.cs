@@ -156,7 +156,7 @@ namespace Snake
             foreach (var i in backupControls)
             {
                 Config.Instance.Set(i.Key, i.Value);
-            }           
+            }
         }
     }
 }

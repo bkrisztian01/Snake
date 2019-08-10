@@ -126,7 +126,11 @@
     <Content Include="ColorSelectForm.resx">
       <DependentUpon>ColorSelectForm.cs</DependentUpon>
     </Content>
-    <EmbeddedResource Include="whatthef.wav" />
+    <EmbeddedResource Include="Sounds\speedBoostSound.wav" />
+    <EmbeddedResource Include="Sounds\changeControlSound.wav" />
+    <EmbeddedResource Include="Sounds\shrinkSound.wav" />
+    <EmbeddedResource Include="Sounds\growSound.wav" />
+    <EmbeddedResource Include="Sounds\endSound.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

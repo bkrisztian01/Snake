@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Media;
+using System.Reflection;
 
 namespace Snake
 {
@@ -18,8 +19,8 @@ namespace Snake
 
         public Apple(Color color, Vector position, string soundPath)
         {
-            //TODO: Sounds
-            //eatSound = new SoundPlayer(soundPath);
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            eatSound = new SoundPlayer(assembly.GetManifestResourceStream(soundPath));
             this.color = color;
             X = position.X;
             Y = position.Y;
@@ -32,14 +33,14 @@ namespace Snake
 
         virtual public void action(Snake snake, List<Snake> enemy)
         {
-            //try
-            //{
-            //    eatSound.Play();
-            //}
-            //catch (Exception e)
-            //{
+            try
+            {
+                eatSound.Play();
+            }
+            catch (Exception e)
+            {
 
-            //}
+            }
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Snake
 {
     class DoubleGrowApple : Apple
     {
-        public DoubleGrowApple(Vector position) : base(Color.Gold, position, "Air_Woosh_Underwater.wav")
+        public DoubleGrowApple(Vector position) : base(Color.Gold, position, "Snake.Sounds.growSound.wav")
         {
         }
 

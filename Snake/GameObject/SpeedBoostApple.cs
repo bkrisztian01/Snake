@@ -13,7 +13,7 @@ namespace Snake
 {
     class SpeedBoostApple : Apple
     {
-        public SpeedBoostApple(Vector position) : base(Color.LightPink, position, "Super Mario Bros.-Coin Sound Effect.wav")
+        public SpeedBoostApple(Vector position) : base(Color.LightPink, position, "Snake.Sounds.speedBoostSound.wav")
         {
         }
 

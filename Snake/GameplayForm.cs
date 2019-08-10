@@ -20,7 +20,6 @@ namespace Snake
 {
     public partial class GameplayForm : Form
     {
-        Assembly assembly;
         PlayZone map = new PlayZone();
         List<Snake> snake = new List<Snake>();
         bool started = false;
@@ -37,8 +36,8 @@ namespace Snake
             map.mapUnit = 500 / map.mapSize;
             timer1.Interval = Convert.ToInt32(textBox1.Text);
 
-            assembly = Assembly.GetExecutingAssembly();
-            endSound = new SoundPlayer(assembly.GetManifestResourceStream("Snake.whatthef.wav"));
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            endSound = new SoundPlayer(assembly.GetManifestResourceStream("Snake.Sounds.endSound.wav"));
 
             PlayerCountForm form = new PlayerCountForm();
             form.ShowDialog();
